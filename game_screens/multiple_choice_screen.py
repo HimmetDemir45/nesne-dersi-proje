@@ -8,89 +8,107 @@ class MultipleChoiceScreen(tk.Frame):
         super().__init__(parent, bg=COLOR_BG)
         self.controller = controller
 
-        self.time = 10
+        self.start_time = 10 # Her soru için süre
+        self.total_questions = 10 # Toplam soru sayısı
+        self.time = self.start_time
         self.countdown_id = None
         self.true_answer = ""
         self.answer_buttons = []
-        self.is_processing = False  # Cevap kontrolü sırasında tıklamayı engellemek için
+        self.is_processing = False
+        self.question_count = 0
 
-        # Üst Bilgi Paneli
+        # --- Üst Bilgi Paneli ---
         top_frame = tk.Frame(self, bg=COLOR_BG)
         top_frame.pack(fill="x", padx=10, pady=10)
 
-        self.time_label = tk.Label(top_frame, text=f"Süre: {self.time}",
-                                   font=FONT_NY_BOLD, fg=COLOR_FG, bg=COLOR_BG)
-        self.time_label.pack(side="left")
+        # Sol taraf: Soru Sayacı
+        self.counter_label = tk.Label(top_frame, text=f"Soru: 1/{self.total_questions}",
+                                      font=FONT_NY_BOLD, fg=COLOR_FG, bg=COLOR_BG)
+        self.counter_label.pack(side="left", padx=10)
 
+        # Orta: Süre
+        self.time_label = tk.Label(top_frame, text=f"Süre: {self.time}",
+                                   font=FONT_NY_BOLD, fg="#E74C3C", bg=COLOR_BG) # Süre kırmızı renkte
+        self.time_label.pack(side="left", padx=20)
+
+        # Sağ: Skor
         self.skor_label = tk.Label(top_frame, text="Skor: 0",
                                    font=FONT_NY_BOLD, fg=COLOR_FG, bg=COLOR_BG)
-        self.skor_label.pack(side="right")
+        self.skor_label.pack(side="right", padx=10)
 
-        # Soru Alanı
+        # --- Soru Alanı ---
         self.top_answer_label = tk.Label(self, text="...", font=("Arial", 24, "bold"),
                                          bg="white", fg="black", height=2, width=20, relief="solid")
         self.top_answer_label.pack(side="top", pady=30)
 
-        # Şıklar (Butonlar)
+        # --- Şıklar ---
         buttons_frame = tk.Frame(self, bg=COLOR_BG)
         buttons_frame.pack(pady=10)
 
         for _ in range(4):
             btn = tk.Button(buttons_frame, text="", font=FONT_NY_BOLD, height=2, width=25,
-                            bg="white", fg="black") # Varsayılan renkler
+                            bg="white", fg="black")
             btn.pack(side="top", pady=5)
             self.answer_buttons.append(btn)
 
-        # Geri Dön Butonu
-        tk.Button(self, text="Menüye Dön", command=self.go_back,
+        # Alt Buton
+        tk.Button(self, text="Pes Et / Menü", command=self.go_back,
                   bg=COLOR_BTN_BACK, fg="white", height=2, width=15
                   ).pack(side="bottom", pady=20)
 
     def go_back(self):
-        """Geri sayımı durdur ve menüye dön."""
+        """Menüye dön."""
+        self.finish_game()
+
+    def stop_timer(self):
+        """Sayacı durdurur."""
         if self.countdown_id:
             self.after_cancel(self.countdown_id)
-        self.controller.show_frame("MenuScreen")
+            self.countdown_id = None
 
     def on_show(self):
-        """Ekran açıldığında sıfırla ve başlat."""
-        self.time = 10
-        self.skor_label.config(text=f"Skor: {self.controller.score}")
-        self.time_label.config(text=f"Süre: {self.time}")
+        """Ekran açıldığında oyunu sıfırla ve başlat."""
+        self.controller.score = 0
+        self.question_count = 0
+        self.skor_label.config(text=f"Skor: 0")
         self.is_processing = False
-
-        if self.countdown_id:
-            self.after_cancel(self.countdown_id)
-
+        self.stop_timer()
         self.setup_question()
-        self.start_countdown()
 
     def setup_question(self):
-        """Yeni soru hazırla."""
-        # Main dosyasındaki hafızaya alınmış veriyi kullan
-        data = self.controller.get_data()
-        if data is None:
+        """Yeni soru hazırlar."""
+        # 1. KONTROL: Eğer soru sayısı limit dolduysa oyunu bitir
+        if self.question_count >= self.total_questions:
+            self.finish_game()
             return
 
+        # Soru sayısını artır ve etiketi güncelle
+        self.question_count += 1
+        self.counter_label.config(text=f"Soru: {self.question_count}/{self.total_questions}")
+
+        # Veriyi al
+        data = self.controller.get_data()
+        if data is None: return
+
         self.is_processing = False
-        self.time = 10
+
+        # Süreyi sıfırla
+        self.time = self.start_time
         self.time_label.config(text=f"Süre: {self.time}")
 
-        # Buton renklerini sıfırla
+        # Butonları temizle
         for btn in self.answer_buttons:
             btn.config(bg="white", state="normal")
 
         try:
             col1, col2 = self.controller.language_pair
-            # Veriyi listeye çevir
             col1_words = data[col1].to_list()
             col2_words = data[col2].to_list()
         except KeyError:
-            # Hata durumunda menüye at
             self.go_back()
             return
 
-        # Rastgele kelime seç
+        # Rastgele soru seç
         random_index = random.randint(0, len(col1_words) - 1)
         question_word = col1_words[random_index]
         self.true_answer = col2_words[random_index]
@@ -112,47 +130,68 @@ class MultipleChoiceScreen(tk.Frame):
                 command=lambda ans=answer, b=self.answer_buttons[i]: self.check_answer(ans, b)
             )
 
-    def start_countdown(self):
-        """Süre sayacı."""
-        if self.is_processing: return # Cevap kontrol ediliyorsa sayma
+        # Sayacı başlat
+        self.start_timer()
+
+    def start_timer(self):
+        self.stop_timer()
+        # 1 saniye bekle ve saymaya başla
+        self.countdown_id = self.after(1000, self.tick)
+
+    def tick(self):
+        if self.is_processing: return
 
         if self.time > 0:
             self.time -= 1
             self.time_label.config(text=f"Süre: {self.time}")
-            self.countdown_id = self.after(1000, self.start_countdown)
+
+            if self.time > 0:
+                self.countdown_id = self.after(1000, self.tick)
+            else:
+                self.time_up()
         else:
-            # Süre doldu
-            self.top_answer_label.config(text="Süre Doldu!")
-            self.is_processing = True
-            # Doğru cevabı göster (Yeşil yap)
-            for btn in self.answer_buttons:
-                if btn['text'] == self.true_answer:
-                    btn.config(bg=COLOR_BTN_PLAY) # Yeşil
-            # 1.5 sn sonra yeni soru
-            self.after(1500, self.setup_question)
-            # Sayacı tekrar başlatma, setup_question başlatacak
+            self.time_up()
+
+    def time_up(self):
+        """Bu soru için süre doldu."""
+        self.is_processing = True
+        self.top_answer_label.config(text="Süre Doldu!")
+        self.show_correct_answer()
+        # 1.5 saniye sonra yeni soruya geç
+        self.after(1500, self.setup_question)
+
+    def show_correct_answer(self):
+        """Doğru cevabı yeşil yap."""
+        for btn in self.answer_buttons:
+            if btn['text'] == self.true_answer:
+                btn.config(bg=COLOR_BTN_PLAY)
 
     def check_answer(self, selected_answer, btn):
-        """Cevabı görsel olarak kontrol et."""
         if self.is_processing: return
         self.is_processing = True
+        self.stop_timer()
 
-        # Butonları geçici olarak dondur
         for b in self.answer_buttons:
             b.config(state="disabled")
 
         if selected_answer == self.true_answer:
-            # DOĞRU: Yeşil yap, puan ekle
             btn.config(bg=COLOR_BTN_PLAY) # Yeşil
             self.controller.score += 5
             self.skor_label.config(text=f"Skor: {self.controller.score}")
         else:
-            # YANLIŞ: Kırmızı yap
             btn.config(bg="#E74C3C") # Kırmızı
-            # Doğru olanı da yeşil göster ki kullanıcı öğrensin
-            for b in self.answer_buttons:
-                if b['text'] == self.true_answer:
-                    b.config(bg=COLOR_BTN_PLAY)
+            self.show_correct_answer()
 
-        # 1 saniye bekle ve yeni soruya geç
+        # 1 saniye sonra yeni soruya geç
         self.after(1000, self.setup_question)
+
+    def finish_game(self):
+        """Oyun bitti, sonuç ekranına git."""
+        self.stop_timer()
+        # Eğer app.py güncellenmediyse burada hata olabilir, kontrol edelim.
+        try:
+            self.controller.show_frame("ResultScreen")
+        except KeyError:
+            # Eğer ResultScreen eklenmemişse menüye dön
+            print("Hata: ResultScreen bulunamadı. Lütfen app.py dosyasını güncelleyin.")
+            self.controller.show_frame("MenuScreen")

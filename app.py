@@ -4,7 +4,7 @@ import pandas
 
 # Paketlerimizden sınıfları çekiyoruz
 from screens import (WelcomeScreen, MenuScreen, AddWordScreen,
-                     LanguageSelectScreen, ModeSelectScreen)
+                     LanguageSelectScreen, ModeSelectScreen, ResultScreen)
 from game_screens import MultipleChoiceScreen, WordMatchingScreen
 
 from constants import COLOR_BG
@@ -41,7 +41,7 @@ class WordGameApp(tk.Tk):
 
         # Tüm ekran sınıflarını döngüyle oluşturup stack'e atıyoruz
         for F in (WelcomeScreen, MenuScreen, AddWordScreen, LanguageSelectScreen,
-                  ModeSelectScreen, MultipleChoiceScreen, WordMatchingScreen):
+                  ModeSelectScreen, MultipleChoiceScreen, WordMatchingScreen, ResultScreen):
             frame_name = F.__name__
             # 'self' parametresi ile main uygulamanın kendisini (controller) gönderiyoruz
             frame = F(container, self)
