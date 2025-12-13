@@ -12,14 +12,14 @@ class ModeSelectScreen(tk.Frame):
                                      width=33, height=2, wraplength=400)
         choose_mode_label.pack(side="top", pady=(2, 20))
 
-        tk.Button(self, width=10, height=2, text="Geri",
+        tk.Button(self, width=15, height=2, text="Geri",
                   command=lambda: controller.show_frame("LanguageSelectScreen"),
                   bg=COLOR_BTN_BACK, fg="white").pack(side="bottom")
 
-        tk.Button(self, text="Eşleştirme", fg=COLOR_BTN_FG, bg=COLOR_BTN_MATCH, width=30, height=2,
+        tk.Button(self, text="Eşleştirme", fg="#333333", bg="#2196F3", width=60, height=3,
                   command=lambda: controller.show_frame("WordMatchingScreen")
-                  ).pack(side="bottom", pady=10)
+                  ).pack(side="top", pady=(160,20))
 
-        tk.Button(self, text="Çoktan Seçmeli", fg=COLOR_BTN_FG, bg=COLOR_BTN_CHOICE, width=30, height=2,
+        tk.Button(self, text="Çoktan Seçmeli", fg="#333333", bg="#FF7043", width=60, height=3,
                   command=lambda: controller.show_frame("MultipleChoiceScreen")
-                  ).pack(side="bottom", pady=10)
+                  ).pack(side="top")

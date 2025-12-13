@@ -18,7 +18,7 @@ class LanguageSelectScreen(tk.Frame):
 
         # --- Başlık ---
         tk.Label(self, text="Lütfen Dil Çiftini Seçiniz", font=FONT_NY_BOLD,
-                 fg=COLOR_FG, bg=COLOR_BG).pack(side="top", fill="x", pady=(30, 20))
+                 fg=COLOR_FG, bg=COLOR_BG).pack(side="top", fill="x", pady=(120, 20))
 
         # --- Dil Listesini Hazırla ---
         self.available_languages = self.get_languages_from_csv("table.csv")
@@ -33,14 +33,14 @@ class LanguageSelectScreen(tk.Frame):
 
         # 1. Dil Seçimi
         tk.Label(select_frame, text="1. Dil (Soru):", font=("Arial", 12), bg=COLOR_BG).grid(row=0, column=0, padx=10,
-                                                                                            pady=5)
+                                                                                            pady=30)
         self.combo1 = ttk.Combobox(select_frame, values=self.available_languages, state="readonly", width=15)
         self.combo1.current(0)  # İlk sıradakini seç
         self.combo1.grid(row=0, column=1, padx=10, pady=5)
 
         # 2. Dil Seçimi
         tk.Label(select_frame, text="2. Dil (Cevap):", font=("Arial", 12), bg=COLOR_BG).grid(row=1, column=0, padx=10,
-                                                                                             pady=5)
+                                                                                             pady=20)
         self.combo2 = ttk.Combobox(select_frame, values=self.available_languages, state="readonly", width=15)
 
         # İkinci dili, eğer varsa listedeki ikinci eleman yap, yoksa birinciyi seç
@@ -50,16 +50,18 @@ class LanguageSelectScreen(tk.Frame):
             self.combo2.current(0)
         self.combo2.grid(row=1, column=1, padx=10, pady=5)
 
+        # --- Geri Butonu ---
+        tk.Button(self, text="Geri", command=lambda: controller.show_frame("MenuScreen"),
+                  bg=COLOR_BTN_BACK, fg="white", height=2, width=15
+                  ).pack(side="bottom", pady=20)
+
         # --- Oyunu Başlat Butonu ---
         tk.Button(self, text="SEÇİLEN DİLLERLE BAŞLA", fg=COLOR_BTN_FG, bg=COLOR_BTN_PLAY,
                   font=FONT_NY_BOLD, height=2, width=25,
                   command=self.start_custom_game
-                  ).pack(pady=30)
+                  ).pack(side="bottom", pady=30)
 
-        # --- Geri Butonu ---
-        tk.Button(self, text="Geri", command=lambda: controller.show_frame("MenuScreen"),
-                  bg=COLOR_BTN_BACK, fg="white", height=2, width=10
-                  ).pack(side="bottom", pady=20)
+
 
     def get_languages_from_csv(self, filename):
         """CSV dosyasının sadece başlıklarını okuyarak dil listesini döndürür."""
