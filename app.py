@@ -19,7 +19,6 @@ class WordGameApp(tk.Tk):
 
         self.title("KELİME OYUNU")
         self.config(padx=50, pady=50, bg=COLOR_BG)
-        # Pencere boyutunu biraz genişlettik
         self.minsize(600, 700)
 
         # --- Oyun Verileri ---
