@@ -23,14 +23,18 @@ class ResultScreen(tk.Frame):
 
         tk.Button(self, text="Ana Menü", font=FONT_NY_BOLD,
                   bg=COLOR_BTN_BACK, fg="white", width=20, height=2,
-                  command=lambda: controller.show_frame("MenuScreen")).pack(pady=10)
+                  command=self.go_menu).pack(pady=10)
 
     def on_show(self):
-        """Ekran açıldığında güncel skoru al."""
-        self.final_score_label.config(text=f"Toplam Skor: {self.controller.score}")
+        """Ekran açıldığında güncel skoru GameEngine'den al."""
+        # YENİ YAPI: Controller -> GameEngine -> get_score()
+        score = self.controller.game_engine.get_score()
+        self.final_score_label.config(text=f"Toplam Skor: {score}")
 
     def play_again(self):
         """Skoru sıfırla ve son oynanan moda geri dön."""
-        self.controller.score = 0
-        # Burada basitçe mod seçme ekranına atıyoruz, istenirse son moda da atılabilir
+        # Skoru burada sıfırlamaya gerek yok, oyun ekranları on_show'da start_new_game() yapıyor zaten.
         self.controller.show_frame("ModeSelectScreen")
+
+    def go_menu(self):
+        self.controller.show_frame("MenuScreen")
