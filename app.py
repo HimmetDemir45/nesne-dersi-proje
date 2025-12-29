@@ -19,7 +19,7 @@ class WordGameApp:
     """
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("Nesne Tabanlı Kelime Oyunu")
+        self.root.title("Kelime Oyunu")
         self.root.geometry("600x700")
 
         # 1. Çekirdek (Core) Kurulumu

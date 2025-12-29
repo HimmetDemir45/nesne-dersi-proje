@@ -19,16 +19,31 @@ class MultipleChoiceGenerator(IQuestionGenerator):
     def __init__(self):
         self.q_list = []
         self.a_list = []
+        self.used_indices = set() # Sorulan soruları takip etmek için
+        self.counter = 0          # Şu anki soru sayısı
+        self.limit = 10           # Toplam soru limiti
 
     def set_data(self, questions: list, answers: list):
         self.q_list = questions
         self.a_list = answers
+        # Her yeni oyun başladığında sayacı ve geçmişi sıfırla
+        self.used_indices = set()
+        self.counter = 0
 
     def generate(self) -> dict:
-        if not self.q_list:
+        # Liste boşsa veya limit dolduysa None döndür (Oyun biter)
+        if not self.q_list or self.counter >= self.limit:
             return None
 
-        idx = random.randint(0, len(self.q_list) - 1)
+        # Daha önce sorulmamış rastgele bir index bul
+        available_indices = [i for i in range(len(self.q_list)) if i not in self.used_indices]
+
+        if not available_indices: # Eğer havuzdaki kelimeler bittiyse
+            return None
+
+        idx = random.choice(available_indices)
+        self.used_indices.add(idx) # Bu soruyu kullanıldı olarak işaretle
+
         correct_answer = self.a_list[idx]
         question_text = self.q_list[idx]
 
@@ -40,30 +55,49 @@ class MultipleChoiceGenerator(IQuestionGenerator):
                 options.append(wrong)
 
         random.shuffle(options)
+        self.counter += 1
 
         return {
             "question": question_text,
-            "correct": correct_answer,
+            "correct": correct_answer, # Doğru cevabı UI bilsin diye buraya ekledik
             "options": options,
-            "index": idx + 1,
-            "total": len(self.q_list) # Toplam soru sayısı yerine havuz boyutunu veriyoruz
+            "index": self.counter,
+            "total": self.limit
         }
 
 class MatchGenerator(IQuestionGenerator):
-    """Eşleştirme oyunu için özel üretici."""
+    """Eşleştirme oyunu için özel üretici (Limitli ve Takipli)."""
     def __init__(self):
         self.q_list = []
         self.a_list = []
+        self.used_indices = set()
+        self.counter = 0
+        self.limit = 10 # 10 Tur Sınırı
 
     def set_data(self, questions: list, answers: list):
         self.q_list = questions
         self.a_list = answers
+        self.used_indices = set()
+        self.counter = 0
 
     def generate(self, count=4) -> dict:
-        if not self.q_list: return None
+        # Limit kontrolü
+        if self.counter >= self.limit:
+            return None
 
-        limit = min(count, len(self.q_list))
-        indices = random.sample(range(len(self.q_list)), limit)
+        # Kullanılmamış kelimeleri bul
+        available_indices = [i for i in range(len(self.q_list)) if i not in self.used_indices]
+
+        # Eğer yeterli kelime kalmadıysa oyunu bitir
+        if len(available_indices) < count:
+            return None
+
+        # Rastgele seçim yap
+        indices = random.sample(available_indices, count)
+
+        # Seçilenleri 'kullanıldı' olarak işaretle
+        for idx in indices:
+            self.used_indices.add(idx)
 
         pairs = {}
         left = []
@@ -77,9 +111,12 @@ class MatchGenerator(IQuestionGenerator):
             pairs[q] = a
 
         random.shuffle(right)
+        self.counter += 1
 
         return {
             "left": left,
             "right": right,
-            "pairs": pairs
+            "pairs": pairs,
+            "round": self.counter,
+            "total_rounds": self.limit
         }
