@@ -1,55 +1,55 @@
 import tkinter as tk
-from tkinter import messagebox
-from utils import DataManager, GameEngine
-from screens import (WelcomeScreen, MenuScreen, AddWordScreen,
-                     LanguageSelectScreen, ModeSelectScreen, ResultScreen)
-from game_screens import MultipleChoiceScreen, WordMatchingScreen
-from constants import COLOR_BG
+from core.data_manager import CSVDataManager
+from core.game_features import BasicScoreManager, MultipleChoiceGenerator
+from core.game_controller import GameController
+from ui.screen_manager import ScreenManager
+from ui.screens.welcome_screen import WelcomeScreen
+from ui.screens.menu_screen import MenuScreen
+from ui.screens.language_select_screen import LanguageSelectScreen
+from ui.screens.mode_select_screen import ModeSelectScreen
+from ui.screens.game_screen import GameScreen
+from ui.screens.match_screen import MatchScreen
+from ui.screens.result_screen import ResultScreen
+from ui.screens.add_word_screen import AddWordScreen
+class WordGameApp:
+    """
+    Uygulamanın Başlatıcısı (Entry Point).
+    Hiçbir mantık içermez, sadece kabloları bağlar.
+    """
+    def __init__(self):
+        self.root = tk.Tk()
+        self.root.title("Nesne Tabanlı Kelime Oyunu")
+        self.root.geometry("600x700")
 
-class WordGameApp(tk.Tk):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.title("KELİME OYUNU")
-        self.config(padx=50, pady=50, bg=COLOR_BG)
-        self.minsize(600, 700)
+        # 1. Çekirdek (Core) Kurulumu
+        data_mgr = CSVDataManager()
+        score_mgr = BasicScoreManager()
+        # Varsayılan olarak çoktan seçmeli ile başlıyoruz ama controller bunu değiştirebilir
+        generator = MultipleChoiceGenerator()
 
-        # --- ÇEKİRDEK SINIFLARIN BAŞLATILMASI ---
-        self.data_manager = DataManager()
-        self.game_engine = GameEngine(self.data_manager)
+        self.controller = GameController(data_mgr, score_mgr)
+        # Generator'ı controller'a set ediyoruz (Opsiyonel, oyun başlayınca da yapılabilir)
+        self.controller.set_generator(generator)
 
-        # Veri ve Oyun mantığı instance'ları oluşturuluyor
-        container = tk.Frame(self, bg=COLOR_BG)
-        container.pack(side="top", fill="both", expand=True)
-        container.grid_rowconfigure(0, weight=1)
-        container.grid_columnconfigure(0, weight=1)
+        # 2. UI Kurulumu
+        self.screen_manager = ScreenManager(self.root)
 
-        self.frames = {}
+        # 3. Ekranları Kaydetme
+        # Not: Diğer ekranları da ui/screens/ altına taşıyıp AbstractScreen'den türetmelisin.
+        self.screen_manager.add_screen(WelcomeScreen, "WelcomeScreen", self.controller)
+        self.screen_manager.add_screen(MenuScreen, "MenuScreen", self.controller)
+        self.screen_manager.add_screen(LanguageSelectScreen, "LanguageSelectScreen", self.controller)
+        self.screen_manager.add_screen(ModeSelectScreen, "ModeSelectScreen", self.controller)
+        self.screen_manager.add_screen(GameScreen, "GameScreen", self.controller)
+        self.screen_manager.add_screen(MatchScreen, "MatchScreen", self.controller)
+        self.screen_manager.add_screen(ResultScreen, "ResultScreen", self.controller)
+        self.screen_manager.add_screen(AddWordScreen, "AddWordScreen", self.controller)
+        # Uygulamayı başlat
+        self.screen_manager.show_screen("WelcomeScreen")
 
-        for F in (WelcomeScreen, MenuScreen, AddWordScreen, LanguageSelectScreen,
-                  ModeSelectScreen, MultipleChoiceScreen, WordMatchingScreen, ResultScreen):
-            frame_name = F.__name__
-            frame = F(container, self)
-            self.frames[frame_name] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
+    def run(self):
+        self.root.mainloop()
 
-        self.show_frame("WelcomeScreen")
-
-    def show_frame(self, frame_name):
-        frame = self.frames[frame_name]
-        if hasattr(frame, 'on_show'):
-            frame.on_show()
-        frame.tkraise()
-
-    # --- ESKİ METOTLARIN YERİNİ ALAN KÖPRÜLER ---
-
-    def set_language_config(self, filename, lang1, lang2):
-        """LanguageSelectScreen artık burayı çağıracak."""
-        success, message = self.data_manager.load_language_pair(filename, lang1, lang2)
-        if success:
-            print(f"Dil ayarlandı: {message}")
-            self.show_frame("ModeSelectScreen")
-        else:
-            messagebox.showerror("Hata", message)
-
-    # Not: load_data_into_memory ve get_data metotlarını tamamen SİLDİK.
-    # Artık verilere self.data_manager üzerinden erişilecek.
+if __name__ == "__main__":
+    app = WordGameApp()
+    app.run()

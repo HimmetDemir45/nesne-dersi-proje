@@ -1,2 +1,0 @@
-from .multiple_choice_screen import MultipleChoiceScreen
-from .word_matching_screen import WordMatchingScreen
