@@ -104,3 +104,7 @@ class GameEngine:
         if is_correct:
             self.score += 5
         return is_correct, self.score
+
+    def get_score(self):
+        """Mevcut skoru döndürür."""
+        return self.score

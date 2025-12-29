@@ -7,7 +7,7 @@ FONT_COURIER_NORMAL = ("Courier", 14)
 COLOR_BG = "#FFFFFF"
 COLOR_FG = "#000000"
 
-# ===== Düğme Renkleri =====
+# ===== Buton Renkleri =====
 COLOR_BTN_FG = "#ECF0F1"
 COLOR_BTN_ADD = "#1900FF"
 COLOR_BTN_PLAY = "#27AE60"

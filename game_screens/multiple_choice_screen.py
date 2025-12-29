@@ -65,6 +65,8 @@ class MultipleChoiceScreen(tk.Frame):
             self.finish_game()
             return
 
+        self.is_processing = False
+
         # UI Güncelleme
         self.counter_label.config(text=f"Soru: {q_data['q_number']}/{q_data['total']}")
         self.top_answer_label.config(text=q_data['question'])
