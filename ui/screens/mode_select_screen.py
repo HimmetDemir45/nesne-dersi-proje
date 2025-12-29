@@ -35,5 +35,5 @@ class ModeSelectScreen(AbstractScreen):
         self.controller.set_generator(gen)
 
         # 2. Ekrana Git (Henüz bu ekranı yapmadık ama altyapısı hazır)
-        # self.navigate("MatchScreen")
+        self.navigate("MatchScreen")
         print("Eşleştirme ekranı yakında...")

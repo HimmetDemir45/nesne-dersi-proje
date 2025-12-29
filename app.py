@@ -11,6 +11,7 @@ from ui.screens.game_screen import GameScreen
 from ui.screens.match_screen import MatchScreen
 from ui.screens.result_screen import ResultScreen
 from ui.screens.add_word_screen import AddWordScreen
+
 class WordGameApp:
     """
     Uygulamanın Başlatıcısı (Entry Point).
@@ -44,6 +45,7 @@ class WordGameApp:
         self.screen_manager.add_screen(MatchScreen, "MatchScreen", self.controller)
         self.screen_manager.add_screen(ResultScreen, "ResultScreen", self.controller)
         self.screen_manager.add_screen(AddWordScreen, "AddWordScreen", self.controller)
+        self.screen_manager.add_screen(MatchScreen, "MatchScreen", self.controller)
         # Uygulamayı başlat
         self.screen_manager.show_screen("WelcomeScreen")
 
