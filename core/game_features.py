@@ -1,10 +1,11 @@
-"""Skor yönetimi ve soru üretme mantığını buraya alıyoruz. Tek bir büyük GameEngine yerine parçalara bölüyoruz."""
 import random
 from .interfaces import IScoreManager, IQuestionGenerator
 
 class BasicScoreManager(IScoreManager):
+    """Skor yönetimi ve soru üretme mantığını buraya alıyoruz."""
+
     def __init__(self):
-        self._score = 0
+        self._score = 0 # _score dışardan elleme burası özel demek
 
     def add_points(self, amount: int):
         self._score += amount

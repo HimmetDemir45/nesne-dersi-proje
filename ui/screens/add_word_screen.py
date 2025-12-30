@@ -35,7 +35,7 @@ class AddWordScreen(AbstractScreen):
                   bg="#95A5A6", fg="white").pack(side="bottom", pady=20)
 
     def on_show(self):
-        # Controller üzerinden dil listesini al (Yeni eklediğimiz metot)
+        # Controller üzerinden dil listesini al
         langs = self.controller.get_available_languages("table.csv")
         if not langs: langs = ["English", "Turkish"]
 

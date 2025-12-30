@@ -33,6 +33,7 @@ class IScoreManager(ABC):
     @abstractmethod
     def get_score(self) -> int: pass
 
+
 class IQuestionGenerator(ABC):
     @abstractmethod
     def set_data(self, questions: list, answers: list): pass

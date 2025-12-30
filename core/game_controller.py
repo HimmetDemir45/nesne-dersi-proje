@@ -1,15 +1,15 @@
-"""Tüm bu parçaları (Veri, Skor, Üretici) yöneten beyin."""
 from .interfaces import IDataManager, IScoreManager, IQuestionGenerator
 
 class GameController:
     """
-    Facade Pattern: Alt sistemlerin karmaşıklığını UI'dan saklar.
+    Alt sistemlerin karmaşıklığını UI'dan saklar.
+    Tüm bu parçaları (Veri, Skor, Üretici) yöneten beyin.
     """
     def __init__(self, data_manager: IDataManager, score_manager: IScoreManager):
         self.data_mgr = data_manager
         self.score_mgr = score_manager
 
-        # O anki aktif soru üretici (Strategy Pattern benzeri)
+        # O anki aktif soru üretici
         self.current_generator = None
         self.current_correct_answer = None
         self.current_match_pairs = {}

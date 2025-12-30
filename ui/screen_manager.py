@@ -17,7 +17,6 @@ class ScreenManager:
     def add_screen(self, screen_class, screen_name, game_controller):
         """
         Yeni bir ekranı oluşturur ve sisteme kaydeder.
-        Dependency Injection burada yapılır (Controller ekrana verilir).
         """
         frame = screen_class(parent=self.container, manager=self, controller=game_controller)
         self.frames[screen_name] = frame
@@ -27,7 +26,5 @@ class ScreenManager:
         """İstenilen ekranı en öne getirir."""
         if screen_name in self.frames:
             frame = self.frames[screen_name]
-            frame.on_show() # Ekranın açılış hazırlığını yap (Hook)
+            frame.on_show() # Ekranın açılış hazırlığını yap
             frame.tkraise()
-        else:
-            print(f"Hata: '{screen_name}' adında bir ekran bulunamadı.")

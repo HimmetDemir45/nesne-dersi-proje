@@ -31,7 +31,6 @@ class LanguageSelectScreen(AbstractScreen):
                   command=self.save_and_continue).pack(pady=30)
 
         # --- Alt Alan (Geri Butonu) ---
-        # Geri butonunu ekranın en altına yapıştırıyoruz
         tk.Button(self, text="Geri Dön", command=lambda: self.navigate("MenuScreen"),
                   bg="#95A5A6", fg="white", width=15).pack(side="bottom", pady=30)
 

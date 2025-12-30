@@ -21,7 +21,7 @@ class CSVDataManager(IDataManager):
             print(f"Hata: {e}")
             return []
 
-    # Arayüzdeki 'load_language_pair' ile AYNI İSİMDE olmalı
+
     def load_language_pair(self, filename: str, lang1: str, lang2: str) -> tuple[bool, str]:
         try:
             data = pd.read_csv(filename, usecols=[lang1, lang2])
@@ -40,14 +40,13 @@ class CSVDataManager(IDataManager):
         except Exception as e:
             return False, f"Hata: {e}"
 
-    # Arayüzdeki 'get_words_list' ile AYNI İSİMDE olmalı
     def get_words_list(self) -> tuple[list, list]:
         if self.current_data is None:
             return [], []
         lang1, lang2 = self.language_pair
         return self.current_data[lang1].tolist(), self.current_data[lang2].tolist()
 
-    # Arayüzdeki 'add_word_pair' ile AYNI İSİMDE olmalı
+
     def add_word_pair(self, filename: str, lang1: str, val1: str, lang2: str, val2: str) -> tuple[bool, str]:
         try:
             if os.path.exists(filename):
@@ -67,7 +66,6 @@ class CSVDataManager(IDataManager):
             new_row[lang1] = val1
             new_row[lang2] = val2
 
-            # Pandas sürümüne göre concat kullanımı
             new_df = pd.DataFrame([new_row])
             df = pd.concat([df, new_df], ignore_index=True)
 

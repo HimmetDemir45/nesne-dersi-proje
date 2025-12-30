@@ -14,7 +14,7 @@ class GameScreen(AbstractScreen):
         self.lbl_question_count = tk.Label(info_frame, text="Soru: 1/10", font=("Arial", 12, "bold"), bg="#F0F3F4")
         self.lbl_question_count.pack(side="left", padx=(0, 20))
 
-        # --- ZAMANLAYICI (YENİ) ---
+        # --- ZAMANLAYICI ---
         self.lbl_timer = tk.Label(info_frame, text="10", font=("Arial", 14, "bold"), fg="#E74C3C", bg="#F0F3F4")
         self.lbl_timer.pack(side="left")
 
@@ -29,13 +29,12 @@ class GameScreen(AbstractScreen):
         btn_frame.pack(pady=10)
 
         for i in range(4):
-            # Lambda fonksiyonunu düzelttik, click olayını doğru yakalaması için
             btn = tk.Button(btn_frame, text="", font=("Arial", 12), width=30, height=2,
                             bg="white", command=lambda idx=i: self.check_answer(idx))
             btn.pack(pady=5)
             self.buttons.append(btn)
 
-        # Pes Et Butonu
+
         tk.Button(self, text="Pes Et", command=self.give_up,
                   bg="#E74C3C", fg="white").pack(side="bottom", pady=20)
 
@@ -52,7 +51,6 @@ class GameScreen(AbstractScreen):
             self.stop_timer()
 
         print("Oyuncu pes etti.")
-        # Burada MenuScreen yerine ResultScreen'e yönlendiriyoruz
         self.navigate("ResultScreen")
 
     def on_show(self):
@@ -67,7 +65,7 @@ class GameScreen(AbstractScreen):
 
         if q_data is None:
             print("Oyun Bitti! Skor:", self.controller.get_score())
-            self.navigate("MenuScreen") # İleride ResultScreen'e yönlendirirsin
+            self.navigate("ResultScreen")
             return
 
         # UI Güncelle
@@ -136,8 +134,8 @@ class GameScreen(AbstractScreen):
 
         self.update_score_label()
 
-        # 1.5 saniye sonra yeni soru
-        self.after(1500, self.next_round)
+        # 0.5 saniye sonra yeni soru
+        self.after(500, self.next_round)
 
     def show_correct_answer(self):
         """Şıklar arasında doğru olanı bulup yeşil yapar."""

@@ -38,7 +38,7 @@ class MatchScreen(AbstractScreen):
         self.left_buttons = []
         self.right_buttons = []
 
-        # 4'er buton oluştur
+        # 4  buton oluştur
         for i in range(4):
             btn_l = tk.Button(self.left_frame, text="", font=("Arial", 11), height=2, bg="white", width=18)
             btn_l.pack(pady=8)
@@ -48,7 +48,7 @@ class MatchScreen(AbstractScreen):
             btn_r.pack(pady=8)
             self.right_buttons.append(btn_r)
 
-        # --- Alt Panel (Pes Et) ---
+
         tk.Button(center_frame, text="Pes Et / Bitir", command=self.give_up,
                   bg="#E74C3C", fg="white", font=("Arial", 10, "bold"), width=20
                   ).pack(pady=30)
@@ -136,7 +136,7 @@ class MatchScreen(AbstractScreen):
                 self.after(500, lambda: [self.reset_selection(), self.start_new_round(), setattr(self, 'matches_found', 0)])
 
         else:
-            # --- YANLIŞ ---
+            # --- YANLI              Ş ---
             btn.config(bg="#E74C3C") # Kırmızı
             self.selected_left_btn.config(bg="#E74C3C")
 

@@ -12,7 +12,7 @@ class AbstractScreen(tk.Frame, ABC):
         self.controller = controller
 
         # Ortak Görsel Ayarlar
-        self.config(bg="#F0F3F4") # Constants kullanmadan hardcode ettik veya import edebilirsin
+        self.config(bg="#F0F3F4")
 
         # Arayüzü oluştur
         self.create_widgets()

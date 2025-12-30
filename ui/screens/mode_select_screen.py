@@ -21,7 +21,7 @@ class ModeSelectScreen(AbstractScreen):
                   bg="#9B59B6", fg="white", width=25, height=2,
                   command=self.start_matching).pack(pady=10)
 
-        # --- Alt Alan ---
+
         tk.Button(self, text="Geri", command=lambda: self.navigate("LanguageSelectScreen"),
                   bg="#95A5A6", fg="white", width=15).pack(side="bottom", pady=30)
 
